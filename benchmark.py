@@ -108,21 +108,48 @@ def get_parent_dir():
     os.mkdir(dirname)
     return dirname
 
-if __name__ == "__main__":
-    stdin_empty = False
-    iterations = 0
-
+def benchmark_commands(commands, repeat = 1):
     dirname = get_parent_dir()
     os.chdir(dirname)
 
-    print "\n%s" % (dirname,)
+    iterations = 0
+    turns = 0
 
-    while not stdin_empty:
-        line = sys.stdin.readline()
-        if line == "":
-            stdin_empty = True
-        else:
-            print "\t%d:: %s" % (iterations, line[:50],)
-            run_benchmark(line.strip(), iterations)
+    while turns < repeat:
+        line = commands[iterations % len(commands)]   
+
+        print "\t%d:: %s" % (iterations, line[:50],)
+        run_benchmark(line.strip(), iterations)
 
         iterations += 1
+
+        if iterations % len(commands) == 0 and iterations > 0:
+            turns += 1
+
+    print "\n%s" % (dirname,)
+
+def get_commands(in_file):
+    commands = []
+    for line in in_file:
+        commands.append(line)
+    return commands
+
+if __name__ == "__main__":
+    commands = []
+    repeat = 1
+    if len(sys.argv) == 1:
+        commands = get_commands(sys.stdin)
+    elif len(sys.argv) >= 2 and len(sys.argv) < 4:
+        if len(sys.argv) == 3:
+            repeat = int(sys.argv[2])
+        with open(sys.argv[1], "r") as in_file:
+            commands = get_commands(in_file)
+    else:
+        print "Useage:"
+        print "\tcat /path/to/file/of_commands.txt > benchmarker.py"
+        print "Or:"
+        print "\tbenchmarker.py /path/to/file/of_commands.txt <num of repeats (int)>"
+
+    if len(commands) > 0:
+        benchmark_commands(commands, repeat)
+
