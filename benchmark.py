@@ -10,6 +10,14 @@ import shutil
 
 from itertools import product
 
+def get_size(start_path = '.'):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
 def run_benchmark(command, unique_id):
 
     analysis_dirname = get_analysis_dir(command, unique_id)
@@ -97,10 +105,13 @@ def write_stats_to_file(monitor_file, start_time):
     free_mem = int(mem_stats.free)
     available_mem = int(mem_stats.available)
 
-    monitor_file.write("%d,%d,%d,%d,%d\n" % (cpu_percent,
+    dirsize = get_size()
+
+    monitor_file.write("%d,%d,%d,%d,%d,%d\n" % (cpu_percent,
                                              cpu_percent_full,
                                              free_mem,
                                              available_mem,
+                                             dirsize,
                                              time_since(start_time)))
 
 def get_parent_dir():
