@@ -56,7 +56,8 @@ def handle_timeout(process,monitor_path):
 def run_command(command):
     output_file = open("./output.txt", "w")
 
-    proc = subprocess.Popen(command.split(" "),
+    proc = subprocess.Popen(command,
+                            shell = True,
                             stdin=output_file, 
                             stdout=output_file, 
                             stderr=output_file)
@@ -71,7 +72,7 @@ def monitor_system(process, timeout):
 
     with open(monitor_path, "w") as monitor_file:
         monitor_file.write(\
-            "CPU_PERCENT,CPU_PERCENT_FULL,FREE_MEM,AVAILABLE_MEM,TIME\n")
+            "CPU-PERCENT,CPU-PERCENT-FULL,FREE-MEM,AVAILABLE-MEM,DISK-USEAGE,TIME\n")
         i = 0
         while process.poll() is None and time_since(start_time) < timeout:
             
